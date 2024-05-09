@@ -1,0 +1,90 @@
+#include<iostream>
+#include<GL/glut.h>
+#include<math.h>
+using namespace std;
+
+int dashLength = 10; // Length of each dash
+bool drawDash = true; // Flag to switch between dash and gap
+
+void init()
+{
+    glClearColor(1.0, 1.0, 1.0, 1.0);
+    glMatrixMode(GL_PROJECTION);
+    glPointSize(3.0);
+    gluOrtho2D(-500, 500, -500, 500);
+}
+
+void bline(int x1, int y1, int x2, int y2)
+{
+    int dx = abs(x2 - x1), dy = abs(y2 - y1);
+    int p = 2 * dy - dx;
+    int x = x1, y = y1;
+    glBegin(GL_POINTS);
+    //glVertex2i(x, y); // Using glVertex2i instead of plot
+    while (x <= x2)
+    {
+        if (drawDash)
+        {
+            glVertex2i(x, y); // Using glVertex2i instead of plot
+        }
+
+        if (p < 0)
+        {
+            p = p + 2 * dy;
+        }
+        else
+        {
+            p = p + 2 * dy - 2 * dx;
+            y++;
+        }
+        x++;
+        if (drawDash)
+        {
+        glVertex2i(x, y); // Using glVertex2i instead of plot
+        }
+
+        dashLength--;
+        if (dashLength == 0)
+        {
+            //drawDash = !drawDash; 
+            dashLength = 10; // Reset the dash length
+            drawDash = !drawDash; // Toggle between dash and gap
+        }
+    }
+    glEnd();
+}
+
+void drawQuadrants()
+{
+	glColor3f(0.0, 0.0, 1.0);
+	
+	glBegin(GL_LINES);
+	glVertex2i(-500,0);
+	glVertex2i(500,0);
+	
+	glVertex2i(0,-500);
+	glVertex2i(0,500);
+	glEnd();
+}
+
+void display()
+{
+    glClear(GL_COLOR_BUFFER_BIT);
+    glColor3f(0, 0, 1);
+    drawQuadrants();
+    glColor3f(1, 0, 0);
+    bline(-300, -300, 300, 300);
+    glFlush();
+}
+
+int main(int argc, char** argv)
+{
+    glutInit(&argc, argv);
+    glutInitWindowSize(500, 500);
+    glutInitWindowPosition(200, 200);
+    glutCreateWindow("DASHED LINE DRAWING ALGORITHM");
+    init();
+    glutDisplayFunc(display);
+    glutMainLoop();
+    return 0;
+}

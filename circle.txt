@@ -1,0 +1,89 @@
+#include<iostream>
+#include<stdio.h>
+#include<GL/glut.h>
+using namespace std;
+int xc, yc, radius;
+void drawCircle(int xx1, int yy1, int r)
+{
+	int x, y;
+	float d;
+	x=0;
+	y=r;
+	
+	d=3-2*r;
+	do
+	{
+		glBegin(GL_POINTS);
+		glVertex2i(xx1+x, yy1+y);
+		glVertex2i(xx1+y, yy1+x);
+		glVertex2i(xx1+y, yy1-x);
+		glVertex2i(xx1+x, yy1-y);
+		glVertex2i(xx1-x, yy1-y);
+		glVertex2i(xx1-y, yy1-x);
+		glVertex2i(xx1-y, yy1+x);
+		glVertex2i(xx1-x, yy1+y);
+		glEnd();
+		if(d <= 0)
+		{
+			d = d + 4*x + 6;
+		}
+		else
+		{
+			d = d+4*(x-y) + 10;
+			y=y-1;
+		}
+		x=x+1;
+	}
+	while(x<y);
+}
+
+void display()
+{
+	glClearColor(1.0, 1.0, 1.0, 1.0);
+	glBegglVertex2Iin(GL_LINES);
+	glVertex2i(-500, 0);
+	glVertex2i(500, 0);
+	glVertex2i(0, -500);
+	glVertex2i(0, 500);
+	glEnd();
+	drawCircle(xc, yc, radius);
+	drawCircle(xc+2*radius, yc, radius);
+	drawCircle(xc, yc+2*radius, radius);
+	drawCircle(xc-2*radius, yc, radius);
+	drawCircle(xc, yc-2*radius, radius);
+	glFlush();	
+}
+
+void init()
+{
+	glClear(GL_COLOR_BUFFER_BIT);
+	glClearColor(0.0, 0.0, 0.0, 1.0);
+	glMatrixMode(GL_PROJECTION);
+	gluOrtho2D(-500.0, 500.0, -500.0, 500.0);
+}
+void myKeyboard(unsigned char key, int mouseX, int mouseY)
+{
+	switch(key)
+	{
+		case 27:
+		exit(0);
+	}
+}
+int main(int argc, char ** argv)
+{
+	cout<<"Enter Radius of Circle: ";
+	cin>>radius;
+	cout<<"Enter Co-ordinate of center og Circle: ";
+	cin>>xc;
+	cin>>yc;
+	glutInit(&argc,argv);
+	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+	glutInitWindowSize(500,500);
+	glutInitWindowPosition(0,0);
+	glutCreateWindow("Bresenham's Circle Drawing");
+	glutKeyboardFunc(myKeyboard); // Register keyboard function
+	init();
+	glutDisplayFunc(display); 
+	glutMainLoop();
+	return 0;
+}

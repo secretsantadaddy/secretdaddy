@@ -1,0 +1,81 @@
+#include<iostream>
+#include<GL/glut.h>
+#include<cmath>
+using namespace std;
+
+void init()
+{
+	glClearColor(1.0, 1.0, 1.0, 1.0);
+	glMatrixMode(GL_PROJECTION);
+	glPointSize(3.0);
+	gluOrtho2D(-500,500,-500,500);
+}
+
+void dda(int x1, int y1, int x2, int y2)
+{
+	int dx = x2 - x1;
+	int dy = y2 - y1;
+	int steps = dx > dy ? dx : dy;
+	float xinc = dx/(float)steps;
+	float yinc = dy/(float)steps;
+	float x = x1;
+	float y = y1;
+	
+	glColor3f(1.0, 0.0, 0.0);
+	glBegin(GL_POINTS);
+	for(int i = 0; i <= steps; i++)
+	{
+		glVertex2i(x,y);
+		x = x + xinc;
+		y = y + yinc;
+	}
+	glEnd();
+}
+
+void drawQuadrants()
+{
+	glColor3f(0.0, 0.0, 1.0);
+	
+	glBegin(GL_LINES);
+	glVertex2i(-500,0);
+	glVertex2i(500,0);
+	
+	glVertex2i(0,-500);
+	glVertex2i(0,500);
+	glEnd();
+}
+
+void staircase()
+{
+    dda(-200, -200, -100, -200);
+    dda(-100, -200, -100, -100);
+    dda(-100, -100, 0, -100);
+    dda(0, -100, 0, 0);
+    dda(0, 0, 100, 0);
+    dda(100, 0, 100, 100);
+    dda(100, 100, 200, 100);
+    dda(200, 100, 200, 200);
+}
+    
+void display()
+{
+	glClear(GL_COLOR_BUFFER_BIT);
+	staircase();
+	drawQuadrants();
+	glFlush();
+}
+
+int main(int argc, char** argv)
+{
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+	glutInitWindowSize(700,700);
+	glutInitWindowPosition(200,200);
+	glutCreateWindow("DDA Staircase Line");
+	init();
+	glutDisplayFunc(display);
+	glutMainLoop();
+	return 0;
+}
+	
+	

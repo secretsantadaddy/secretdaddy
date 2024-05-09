@@ -1,0 +1,62 @@
+#include<GL/glut.h>
+void init()
+{
+	glClearColor(0,0,0,0);
+	glMatrixMode(GL_PROJECTION);
+	gluOrtho2D(0,700,0,700);
+}
+void getPixel(int x,int y,float* color)
+{
+	glReadPixels(x,y,1,1,GL_RGB,GL_FLOAT,color);
+}
+void drawPixel(int x,int y,float* color)
+{
+	glColor3fv(color);
+	glBegin(GL_POINTS);
+	glVertex2i(x,y);
+	glEnd();
+	glFlush();
+}
+void boundaryFill(int x,int y,float* fillColor,float* borderColor)
+{
+	float interiorColor[3];
+	getPixel(x,y,interiorColor);
+	
+	if((interiorColor[0] != borderColor[0] || interiorColor[1] != borderColor[1] || interiorColor[2] != borderColor[2] ) && (interiorColor[0] != fillColor[0] || interiorColor[1] != fillColor[1] || interiorColor[2] != fillColor[2]))
+	{
+		drawPixel(x,y,fillColor);
+		boundaryFill(x+1,y,fillColor,borderColor);
+		boundaryFill(x-1,y,fillColor,borderColor);
+		boundaryFill(x,y+1,fillColor,borderColor);
+		boundaryFill(x,y-1,fillColor,borderColor);
+	}
+}
+void display()
+{
+	glColor3f(1,1,1);
+	glPointSize(2.0);
+	float borderColor[]={1,1,1};
+	float fillColor[]={1,0,0};
+	glBegin(GL_LINE_LOOP);
+	glVertex2i(100,100);
+	glVertex2i(200,100);
+	glVertex2i(200,200);
+	glVertex2i(100,200);
+	glEnd();
+	
+	boundaryFill(120,120,fillColor,borderColor);
+	
+	glFlush();
+	
+}
+int main(int argc,char** argv)
+{
+	glutInit(&argc,argv);
+	glutInitWindowPosition(700,700);
+	glutInitWindowSize(700,700);
+	glutCreateWindow("Boundary Fill Algorithm");
+	init();
+	glutDisplayFunc(display);
+	glutMainLoop();
+	return 0;
+}
